@@ -65,6 +65,7 @@ class _HomePageState extends State<HomePage> {
         child: Icon(Icons.add, color: Colors.black),
       ),
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: Colors.amberAccent,
         title: Text(
           "Your movies",
@@ -81,64 +82,87 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: Container(
+        // color: Colors.teal[100],
         child: !isLoggedin ? CircularProgressIndicator() : getNoteListView(),
       ),
     );
   }
 
-  ListView getNoteListView() {
-    return ListView.builder(
-      itemCount: count,
-      itemBuilder: (BuildContext context, int position) {
-        return Card(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(20.0), //or 15.0
-                  child: Container(
-                    height: 70.0,
-                    width: 70.0,
-                    color: Colors.white,
-                    child: Image.memory(
-                      // (?base64Decode(this.movieList![position].imagecode))
-                      Base64Decoder()
-                          .convert(this.movieList![position].imageCode!),
+  Widget getNoteListView() {
+    return count == 0
+        ? Center(
+            child: Text(
+            "Its empty here :(",
+            style: TextStyle(
+                fontSize: 15,
+                color: Colors.blueGrey,
+                fontWeight: FontWeight.bold),
+          ))
+        : ListView.builder(
+            itemCount: count,
+            itemBuilder: (BuildContext context, int position) {
+              return Card(
+                // color:
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    ListTile(
+                      contentPadding: EdgeInsets.only(top: 10, left: 15),
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0), //or 15.0
+                        child: Container(
+                          height: 85.0,
+                          width: 75.0,
+                          color: Colors.white,
+                          child: Image.memory(
+                            Base64Decoder()
+                                .convert(this.movieList![position].imageCode!),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        this.movieList![position].movieName!,
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text(
+                        "Movie by ${this.movieList![position].director!}",
+                        style: TextStyle(fontSize: 20),
+                      ),
                     ),
-                  ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          onPressed: () =>
+                              _delete(context, movieList![position]),
+                          icon: Icon(
+                            Icons.delete,
+                            color: Colors.redAccent,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          onPressed: () {
+                            navigateToForm(
+                                this.movieList![position], 'Edit movie');
+                          },
+                          icon: Icon(
+                            Icons.edit,
+                            color: Colors.greenAccent,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                    ),
+                  ],
                 ),
-                title: Text(this.movieList![position].movieName!),
-                subtitle: Text(this.movieList![position].director!),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    onPressed: () => _delete(context, movieList![position]),
-                    icon: Icon(
-                      Icons.delete,
-                      color: Colors.redAccent,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    onPressed: () {
-                      navigateToForm(this.movieList![position], 'Edit movie');
-                    },
-                    icon: Icon(
-                      Icons.edit,
-                      color: Colors.greenAccent,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
+              );
+            },
+          );
   }
 
   void navigateToForm(Movie movie, String title) async {

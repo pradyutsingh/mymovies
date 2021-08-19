@@ -42,11 +42,11 @@ class _MovieFormState extends State<MovieForm> {
   _imgFromGallery() async {
     var image = await ImagePicker()
         .pickImage(source: ImageSource.gallery, imageQuality: 50);
-    var _imageFile = File(image!.path);
+    // var _imageFile = File(image!.path);
     setState(() {
       _image = image;
       _imageFile = File(_image!.path);
-      List<int> imageBytes = _imageFile.readAsBytesSync();
+      List<int> imageBytes = _imageFile!.readAsBytesSync();
       _base64Image = base64Encode(imageBytes);
       print(_base64Image);
     });
@@ -114,6 +114,13 @@ class _MovieFormState extends State<MovieForm> {
     return "All good";
   }
 
+  String validatedirector(String value) {
+    if (value.isEmpty) {
+      return "Enter the name of director";
+    }
+    return "All good";
+  }
+
   void updateMovieName() {
     widget.movie.movieName = movienameController.text;
   }
@@ -145,10 +152,10 @@ class _MovieFormState extends State<MovieForm> {
     }
     if (result != 0) {
       // Success
-      _showAlertDialog('Status', 'Note Saved Successfully');
+      _showAlertDialog('Status', 'Movie Saved Successfully');
     } else {
       // Failure
-      _showAlertDialog('Status', 'Problem Saving Note');
+      _showAlertDialog('Status', 'Problem Saving Movie');
     }
   }
 
@@ -156,13 +163,25 @@ class _MovieFormState extends State<MovieForm> {
   Widget build(BuildContext context) {
     moviedirectorController.text = widget.movie.director!;
     movienameController.text = widget.movie.movieName!;
+    bool shouldpop = true;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.amberAccent,
+        child: Icon(
+          Icons.done,
+          color: Colors.black,
+        ),
         onPressed: _save,
       ),
       appBar: AppBar(
         title: Text(widget.appBarTitle!),
         backgroundColor: Colors.amberAccent,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            moveToLastScreen();
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -192,13 +211,13 @@ class _MovieFormState extends State<MovieForm> {
                       controller: moviedirectorController,
                       decoration: InputDecoration(
                         labelText: "Movie Director",
-                        errorText: validateName(moviedirectorController.text),
+                        errorText:
+                            validatedirector(moviedirectorController.text),
                         prefixIcon: Icon(
                           Icons.video_camera_back,
                         ),
                       ),
                       onChanged: (value) {
-                        debugPrint('Something changed in Director Text Field');
                         updateDirector();
                       },
                     ),

@@ -32,7 +32,7 @@ class DataBaseHelper {
 
   Future<Database> initializeDatabase() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + 'movies.db';
+    String path = directory.path + 'movies1.db';
 
     var moviesDatabase =
         await openDatabase(path, version: 1, onCreate: _createDb);
@@ -92,7 +92,7 @@ create table $movieTable (
     var movieMapList = await getMovieMapList();
     int count = movieMapList.length;
 
-    List<Movie>? movieList = List<Movie>.empty();
+    List<Movie> movieList = [];
     for (int i = 0; i < count; i++) {
       movieList.add(Movie.fromMapObject(movieMapList[i]));
     }
